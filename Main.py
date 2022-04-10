@@ -7,24 +7,27 @@ from _sitebuiltins import _Helper
 #【urwid判断字符宽度】
 #https://blog.csdn.net/weixin_44733774/article/details/124079410
 
-def ListPrint(lst):#将列表内容打印
+def ListPrint(lst,keyword=''):#将列表内容打印
     '''
         打印列表内容(其实只要是可迭代可字符串化的都能传入该函数，不仅限列表
+        如果keyword不为空那么将返回有关键词的元素(不区分大小写
         列表打印的列数：ListPrint.cols（值默认为3
         列表打印的列宽：ListPrint.colWidth（值默认为40
 
-        用小数点可以快速调用该函数。小数点调用法：.[变量]
+        用小数点可以快速调用该函数。小数点调用法：.[变量] [关键词]
         执行
-           .[1,2,3]
-           .   [1,2,3]
+           .[1,2,3]   3
+           .[1,2,3] , 3
+           .   [1,2,3]    3
         与执行
-           ListPrint([1,2,3])
+           ListPrint([1,2,3],'3')
         等价
     '''
     if(hasattr(ListPrint,'cols')==False):
         ListPrint.cols=3
     if(hasattr(ListPrint,'colWidth')==False):
         ListPrint.colWidth=40
+    keyword=str(keyword).lower()
 
     from urwid.str_util import get_width
     from math import ceil
@@ -35,6 +38,8 @@ def ListPrint(lst):#将列表内容打印
     cnt=cols
     for i in lst:
         s=str(i)
+        if(s.lower().find(keyword)==-1):
+            continue
         cnt_ch=len(s)#字符个数
         len_ch=sum([get_width(ord(ch)) for ch in s])#字符实际长度
         ncol=ceil(len_ch/colWidth)#需要的列宽个数，向上取整
@@ -69,20 +74,6 @@ def QuicklyInquiry(obj,keyword='',formatPrint=False):#XJ的快速查询小助手
         ListPrint(lst)
     else:
         return lst
-
-def LoadFile(IT:XJ_InteractiveTerminal):#从文件中逐行执行命令。因为有了恶心的“IT”变量的缘故，所以这个函数看起来不是那么美观(使用了函数闭包)
-    def inner(file):
-        '''
-            读取文件，从文件中逐行执行命令
-        '''
-        with open(file,'r',encoding='utf-8') as f:#默认编码为gbk，要手动设为utf-8。详见下面链接：
-            for line in f:
-                line=line.strip('\n')#去除尾部换行符
-                if(len(line)==0):
-                    line=' '#塞一个空格，至少让它不为空
-                IT.ExecOrder(line)
-            IT.ExecOrder('')
-    return inner
 
 def ChangeDir(path=None):#修改当前路径。path为None或者为空时返回当前路径；path无效时提示路径不存在
     '''
@@ -127,7 +118,7 @@ def ListDir():#返回当前路径下的文件+文件夹（分成两个列表返�
 def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.TextPreprocess”绑定，用于执行额外的功能(例如清空输出端文本、设置函数的快速调用、过滤有害命令
     if(text.find('help()')!=-1):#有害指令
         return 'help'
-    if(text.find('import')==0):#【import命令】
+    if(text.find('import')!=-1):#【import命令】
         import os,sys#仅在域内生效，很方便
         sys.path[0]=os.path.abspath(os.curdir)#修改当前路径
         return text
@@ -154,7 +145,9 @@ def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.Te
         text=text[1:].strip()#吃掉首尾空白符
         if(len(text)==0):
             return 'help(ListPrint)'
-        return "ListPrint({})".format(text)
+        text=''.join(text.split(','))
+        text=text.split()
+        return "ListPrint({},'{}')".format(text[0],text[1] if len(text)>1 else '')
     if(text.find('?')==0):#【调用help】
         text=text[1:].strip()#吃掉首尾空白符
         if(len(text)==0):
@@ -163,22 +156,25 @@ def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.Te
     return text
 
 
+
+
+
+sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib')
+sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\site-packages')
+sys.path.append(sys.path[0])
+context=dict()#环境卫生从我做起（选择性地将需要的东西传入命名空间中
+context['ListPrint']=ListPrint
+context['ListDir']=ListDir
+context['ChangeDir']=ChangeDir
+context['QuicklyInquiry']=QuicklyInquiry
+context['help']=_Helper()#加入“help”命令
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    context=dict()#环境卫生从我做起（可以选择性地将需要的东西传入环境中
-    IT=XJ_InteractiveTerminal(context)#如果传入的是globals()的话会有大量的和程序运行无关的东西加入到环境中(如变量IT)，增大了程序崩溃的风险(如对IT赋值，或者执行窗口销毁函数
-    #可以在程序中执行".globals()"以查看程序的当前环境。
-    IT.resize(1300,600)
-    
-    context['ListPrint']=ListPrint
-    context['ListDir']=ListDir
-    context['ChangeDir']=ChangeDir
-    context['QuicklyInquiry']=QuicklyInquiry
-    context['LoadFile']=LoadFile(IT)
-    context['help']=_Helper()#加入“help”命令
+    IT=XJ_InteractiveTerminal(context.copy())#若传入globals()则会有大量的程序无关变量加入到环境中(如变量IT)，增大脚本崩溃风险(如对IT赋值)。可以在程序中执行".globals()"以查看命名空间。
     IT.TextPreprocess=MethodType(TextPreprocess,IT)#设置文本的预处理
-    IT.ExecOrder('LoadFile("Orders.py")')
+    IT.resize(1300,600)
     IT.show()
 
     sys.exit(app.exec())
