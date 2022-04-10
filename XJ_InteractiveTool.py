@@ -24,7 +24,7 @@ class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请
             try:
                 code=compile(text,'','eval')#尝试作为eval进行编译
                 rst=eval(code,locals)#执行代码
-                if(rst!=None):#如果结果不空那就输出结果
+                if(type(rst)!=type(None)):#如果结果不空那就输出结果
                     print(rst)
             except:
                 try:
@@ -60,7 +60,11 @@ class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请
         return self.__varDict
         
 if __name__=='__main__':
-    IT=XJ_InteractiveTool()
+    IT=XJ_InteractiveTool(globals())
+
+    import numpy as np
+    arr=np.array([1,2,3])
+    print(eval('arr'))
     while(True):
         print(''.join(IT.ReadOrder(input("..."if IT.HoldOn() else ">>>"))),end='')
         

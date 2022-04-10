@@ -1,22 +1,24 @@
 import XJ_Recorder
 from XJ_TextEdit import *
-from XJ_ListAccessor import *
-from XJ_InteractiveTool import *
+from XJ_ListAccessor import XJ_ListAccessor
+from XJ_InteractiveTool import XJ_InteractiveTool
 from PyQt5.QtGui import QTextCharFormat,QColor
+from PyQt5.QtWidgets import QVBoxLayout
 
 class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
     def __init__(self,varDict=dict(),parent=None):#记得传入变量字典，环境卫生从我做起
         super(XJ_InteractiveTerminal, self).__init__(parent)
 
         input=XJ_TextEdit()#命令输入端
+        input.setAcceptRichText(False)#关闭“富文本”支持
         input.SendMsgMode(True)#开启“发送信息功能"
         input.OneLineMode(True)#设置为单行模式
-        input.textSent.connect(self.SendText)#绑定事件
+        input.textSent.connect(self.ExecOrder)#绑定事件
 
         output=XJ_TextEdit()#命令显示端
         output.SendMsgMode(False)#关闭“发送信息功能”
         output.setReadOnly(True)#设置为只读
-
+        
 
         box=QVBoxLayout()
         box.addWidget(output)
@@ -40,23 +42,29 @@ class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
         input.setStyleSheet("color:rgb(255,255,255)")
         self.setWindowOpacity(0.80)#设置透明度
         self.__history=['']#输入的历史记录
-        self.__inputAsr=XJ_ListAccessor(self.__history,1000)#容量为1000
+        self.__inputAsr=XJ_ListAccessor(self.__history,1000)#历史记录访问器，容量1000
 
-        self.__AddText("")
+        self.AppendTextToOutput("")
         input.setFocus()#设置焦点
 
-    def SendText(self,text):
-        self.__inputAsr.ForceInsert(text)
+    def ExecOrder(self,text):#执行命令。在编辑框中按回车时将调用该函数（该函数也可单独调用
+        if(len(text.strip())>0):#如果字串不为空那么就插入到历史记录中
+            asr=self.__inputAsr
+            asr.IterSetEnd()#调用这个比调用IterNext更好，毕竟这个减少了不必要的逻辑判断
+            asr.IterBack()#获取倒数第二的字符串(倒数第一位的记录是空字符串)
+            if(asr.GetValue()!=text):#如果记录不一致那就加进来
+                asr.IterSetEnd()#将访问器位置设置为末尾
+                asr.ForceInsert(text)#插入记录
+                asr.IterSetEnd()#将访问器位置设置为末尾
         text=self.TextPreprocess(text)
-        self.__inputAsr.IterNext()
         rst=self.__IT.ReadOrder(text)
         outputText=text+"\n"+''.join(rst)
-        self.__AddText(outputText)
+        self.AppendTextToOutput(outputText)
 
     def TextPreprocess(self,text):#对文本进行预处理的函数
         return text
 
-    def __AddText(self,text):#在文本框self.__output中添加内容
+    def AppendTextToOutput(self,text):#在文本框self.__output中添加内容（该函数也可单独调用
         output=self.__output
         cursor=output.textCursor()
         fmt=QTextCharFormat()
@@ -91,7 +99,7 @@ class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
         
     def ClearScreen(self):#清除输出端文本内容
         self.__output.clear()
-        self.__AddText("")
+        self.AppendTextToOutput("")
 
 
 if __name__ == '__main__':

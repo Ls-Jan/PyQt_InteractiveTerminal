@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QWidget,QTextEdit,QApplication
 from PyQt5.QtGui import QTextCursor,QFont,QTextOption
 from PyQt5.QtCore import Qt,pyqtSignal
 

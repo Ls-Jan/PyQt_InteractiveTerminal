@@ -1,7 +1,7 @@
 
 
 
-class XJ_ListAccessor:#列表访问器，利用该类对列表进行受限式修改
+class XJ_ListAccessor:#列表访问器，利用该类对列表进行受限式修改。该访问器的缺陷(虽然后来发现了但我还是故意保留)————列表的最后一个元素永远是最后一个，无论怎么插入元素都不可能插入到这最后元素的后面
     def __init__(self,lst:list,size=0):#size用于约束容量(该值不大于0时不生效)
         self.__curr=-1 if len(lst)==0 else 0
         self.__size=size
@@ -17,6 +17,10 @@ class XJ_ListAccessor:#列表访问器，利用该类对列表进行受限式修
         return self.__curr
     def IterValid(self):#self.__curr的值超出范围时访问器暂时无效（self.__curr为-1时访问器仍能正常使用
         return self.__curr<len(self.__list)
+    def IterSetEnd(self):#将访问器位置设置为列表的最后一个
+        self.__curr=len(self.__list)-1
+    def IterSetStart(self):#将访问器位置设置为列表的第一个
+        self.__curr=-1 if len(self.__list)==0 else 0
         
     def GetList(self):
         return self.__list
@@ -63,6 +67,9 @@ if __name__=='__main__':
     acr.IterNext()
     acr.ForceInsert(10)
     acr.Insert(20)
+    print(lst)
+    acr.IterSetEnd()
+    acr.ForceInsert(20)#这个20不会插入到5的后面，这虽然是缺陷但问题不大
     print(lst)
     
     
