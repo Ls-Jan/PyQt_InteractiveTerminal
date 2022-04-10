@@ -82,7 +82,7 @@ def ChangeDir(path=None):#修改当前路径。path为None或者为空时返回�
         
         用cd指令可以快速调用该函数： cd [路径]
     '''
-    import os#仅在域内生效，很方便
+    import os,sys#仅在域内生效，很方便
     if(type(path)!=type(None)):
         if(type(path)!=str):
             print("参数错误，请传入字符串")
@@ -96,6 +96,7 @@ def ChangeDir(path=None):#修改当前路径。path为None或者为空时返回�
                 return
             else:
                 os.chdir(path)
+                sys.path[0]=os.path.abspath(os.curdir)#修改当前路径
     return os.path.abspath(os.curdir)#返回当前路径
 
 
@@ -118,10 +119,6 @@ def ListDir():#返回当前路径下的文件+文件夹（分成两个列表返�
 def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.TextPreprocess”绑定，用于执行额外的功能(例如清空输出端文本、设置函数的快速调用、过滤有害命令
     if(text.find('help()')!=-1):#有害指令
         return 'help'
-    if(text.find('import')!=-1):#【import命令】
-        import os,sys#仅在域内生效，很方便
-        sys.path[0]=os.path.abspath(os.curdir)#修改当前路径
-        return text
     if(text.strip()=='ls'):#【打印当前路径下的文件+文件夹】
         return '[ListPrint(lst) for lst in ListDir()] and None'#为了不引入变量lst，使用这种奇怪的做法
     if(text.find('cd')==0):#【切换当前路径】
