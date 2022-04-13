@@ -34,7 +34,6 @@ def ListPrint(lst,keyword=''):#将列表内容打印
     cols=ListPrint.cols
     colWidth=ListPrint.colWidth
     print('_'*(colWidth*cols+cols+1))
-
     cnt=cols
     for i in lst:
         s=str(i)
@@ -43,6 +42,8 @@ def ListPrint(lst,keyword=''):#将列表内容打印
         cnt_ch=len(s)#字符个数
         len_ch=sum([get_width(ord(ch)) for ch in s])#字符实际长度
         ncol=ceil(len_ch/colWidth)#需要的列宽个数，向上取整
+        if(ncol==0):#如果s是空字符串，那么ncol的值为0，所以需要人为给它设置1
+            ncol=1
         if(ncol>cnt):#超过剩余的宽度
             if(cnt!=cols):#这不是新行
                 print('|{:^{}}|'.format('',colWidth*cnt+cnt-1))
@@ -156,18 +157,19 @@ def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.Te
 
 
 
-sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib')
-sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\site-packages')
-sys.path.append(sys.path[0])
-context=dict()#环境卫生从我做起（选择性地将需要的东西传入命名空间中
-context['ListPrint']=ListPrint
-context['ListDir']=ListDir
-context['ChangeDir']=ChangeDir
-context['QuicklyInquiry']=QuicklyInquiry
-context['help']=_Helper()#加入“help”命令
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib')
+    sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\site-packages')
+    sys.path.append(sys.path[0])
+
+    context=dict()#环境卫生从我做起（选择性地将需要的东西传入命名空间中
+    context['ListPrint']=ListPrint
+    context['ListDir']=ListDir
+    context['ChangeDir']=ChangeDir
+    context['QuicklyInquiry']=QuicklyInquiry
+    context['help']=_Helper()#加入“help”命令
 
     IT=XJ_InteractiveTerminal(context.copy())#若传入globals()则会有大量的程序无关变量加入到环境中(如变量IT)，增大脚本崩溃风险(如对IT赋值)。可以在程序中执行".globals()"以查看命名空间。
     IT.TextPreprocess=MethodType(TextPreprocess,IT)#设置文本的预处理
