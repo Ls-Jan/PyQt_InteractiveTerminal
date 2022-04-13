@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import QApplication
 from XJ_InteractiveTerminal import XJ_InteractiveTerminal
 from types import MethodType
@@ -159,7 +160,7 @@ def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.Te
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-
+    sys.path[0]=os.path.abspath(os.curdir)#人为修改路径。打包成exe后该路径和exe所在路径不一致，不知道为啥会出现这种问题，所以就先用这方式强改
     sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib')
     sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\site-packages')
     sys.path.append(sys.path[0])
