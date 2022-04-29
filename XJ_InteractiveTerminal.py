@@ -104,7 +104,6 @@ class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-
     context=dict()#环境卫生从我做起（可以选择性地将需要的东西传入环境中
     IT=XJ_InteractiveTerminal(context)#如果用了globals()的话IT将暴露在交互系统中，一旦对IT有任何的赋值操作或者其他特殊行为(如销毁窗口啥的)的话都会让程序崩溃
     IT.resize(1300,600)

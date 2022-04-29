@@ -62,9 +62,6 @@ class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请
 if __name__=='__main__':
     IT=XJ_InteractiveTool(globals())
 
-    import numpy as np
-    arr=np.array([1,2,3])
-    print(eval('arr'))
     while(True):
         print(''.join(IT.ReadOrder(input("..."if IT.HoldOn() else ">>>"))),end='')
         

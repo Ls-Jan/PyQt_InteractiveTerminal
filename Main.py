@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication
 from XJ_InteractiveTerminal import XJ_InteractiveTerminal
 from types import MethodType
 from _sitebuiltins import _Helper
-#【关于python内open函数encoding编码问题】https://www.cnblogs.com/wangyi0419/p/11192593.html#:~:text=%E7%94%B3%E6%98%8Eopen%20%28%29%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F%E4%B8%BA%27utf-8%27%EF%BC%8C%E5%8D%B3encoding%3D%22utf-8%22.,%E5%9C%A8%E8%AF%BB%E5%8F%96%E6%96%87%E6%9C%AC%E6%96%87%E4%BB%B6%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E5%A6%82%E6%9E%9Copen%20%28%29%E5%87%BD%E6%95%B0%E6%B2%A1%E6%9C%89%E5%A3%B0%E6%98%8E%E4%BB%96%E4%BB%AC%E5%A6%82%E4%BD%95%E7%BC%96%E7%A0%81%EF%BC%8Cpython3%E4%BC%9A%E9%80%89%E5%8F%96%E4%BB%A3%E7%A0%81%E6%89%80%E8%BF%90%E8%A1%8C%E7%9A%84%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%BB%98%E8%AE%A4%E7%BC%96%E7%A0%81%E4%BD%9C%E4%B8%BAopen%20%28%29%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F%E3%80%82            
+#【关于python内open函数encoding编码问题】https://www.cnblogs.com/wangyi0419/p/11192593.html#:~:text=%E7%94%B3%E6%98%8Eopen%20%28%29%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F%E4%B8%BA%27utf-8%27%EF%BC%8C%E5%8D%B3encoding%3D%22utf-8%22.,%E5%9C%A8%E8%AF%BB%E5%8F%96%E6%96%87%E6%9C%AC%E6%96%87%E4%BB%B6%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E5%A6%82%E6%9E%9Copen%20%28%29%E5%87%BD%E6%95%B0%E6%B2%A1%E6%9C%89%E5%A3%B0%E6%98%8E%E4%BB%96%E4%BB%AC%E5%A6%82%E4%BD%95%E7%BC%96%E7%A0%81%EF%BC%8Cpython3%E4%BC%9A%E9%80%89%E5%8F%96%E4%BB%A3%E7%A0%81%E6%89%80%E8%BF%90%E8%A1%8C%E7%9A%84%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%BB%98%E8%AE%A4%E7%BC%96%E7%A0%81%E4%BD%9C%E4%B8%BAopen%20%28%29%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F%E3%80%82
 #【urwid判断字符宽度】
 #https://blog.csdn.net/weixin_44733774/article/details/124079410
 
@@ -13,12 +13,11 @@ def ListPrint(lst,keyword=''):#将列表内容打印
         打印列表内容(其实只要是可迭代可字符串化的都能传入该函数，不仅限列表
         如果keyword不为空那么将返回有关键词的元素(不区分大小写
         列表打印的列数：ListPrint.cols（值默认为3
-        列表打印的列宽：ListPrint.colWidth（值默认为40
+        列表打印的列宽：ListPrint.width（值默认为120
 
-        用小数点可以快速调用该函数。小数点调用法：.[变量] [关键词]
+        用小数点可以快速调用该函数。小数点调用法：.[变量] (空格) [关键词]
         执行
            .[1,2,3]   3
-           .[1,2,3] , 3
            .   [1,2,3]    3
         与执行
            ListPrint([1,2,3],'3')
@@ -26,14 +25,14 @@ def ListPrint(lst,keyword=''):#将列表内容打印
     '''
     if(hasattr(ListPrint,'cols')==False):
         ListPrint.cols=3
-    if(hasattr(ListPrint,'colWidth')==False):
-        ListPrint.colWidth=40
+    if(hasattr(ListPrint,'width')==False):
+        ListPrint.width=120
     keyword=str(keyword).lower()
 
     from urwid.str_util import get_width
     from math import ceil
     cols=ListPrint.cols
-    colWidth=ListPrint.colWidth
+    colWidth=int(ListPrint.width/cols)
     print('_'*(colWidth*cols+cols+1))
     cnt=cols
     for i in lst:
@@ -51,10 +50,16 @@ def ListPrint(lst,keyword=''):#将列表内容打印
                 cnt=cols
             ncol=min(cnt,ncol)
         cnt=cnt-ncol
-        print('|{:^{}}'.format(s,colWidth*ncol-(len_ch-cnt_ch)+ncol-1),end='')
+        if(cols==1):
+            print(s,end='')
+        else:
+            print('|{:^{}}'.format(s,colWidth*ncol-(len_ch-cnt_ch)+ncol-1),end='')
         if(cnt==0):
             cnt=cols
-            print('|')
+            print('|' if cols>1 else '')
+    if(cnt!=cols):
+        print('|{:^{}}|'.format('',colWidth*cnt+cnt-1))
+    print('￣'*((colWidth*cols+cols+1)>>1))
     print()
 
 def QuicklyInquiry(obj,keyword='',formatPrint=False):#XJ的快速查询小助手，如果格式化输出为真那么将执行print语句，否则将返回列表
@@ -81,7 +86,7 @@ def ChangeDir(path=None):#修改当前路径。path为None或者为空时返回�
     '''
         修改当前路径，并返回路径结果。
         path无效时不修改路径。
-        
+
         用cd指令可以快速调用该函数： cd [路径]
     '''
     import os,sys#仅在域内生效，很方便
@@ -117,7 +122,7 @@ def ListDir():#返回当前路径下的文件+文件夹（分成两个列表返�
         else:
             file.append(p)
     return file,folder
-    
+
 def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.TextPreprocess”绑定，用于执行额外的功能(例如清空输出端文本、设置函数的快速调用、过滤有害命令
     if(text.find('help()')!=-1):#有害指令
         return 'help'
@@ -144,7 +149,7 @@ def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.Te
         text=text[1:].strip()#吃掉首尾空白符
         if(len(text)==0):
             return 'help(ListPrint)'
-        text=''.join(text.split(','))
+#        text=''.join(text.split(','))
         text=text.split()
         return "ListPrint({},'{}')".format(text[0],text[1] if len(text)>1 else '')
     if(text.find('?')==0):#【调用help】
@@ -160,10 +165,21 @@ def TextPreprocess(self,text):#文本预处理，与“XJ_InteractiveTerminal.Te
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    sys.path[0]=os.path.abspath(os.curdir)#人为修改路径。打包成exe后该路径和exe所在路径不一致，不知道为啥会出现这种问题，所以就先用这方式强改
-    sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib')
-    sys.path.append('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\site-packages')
-    sys.path.append(sys.path[0])
+    sys.path=[#人为修改路径。打包成exe后该路径和exe所在路径不一致，不知道为啥会出现这种问题，而且也缺乏了必要的python包路径，所以就先用这方式强改
+        os.path.abspath(os.curdir),
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\python37.zip',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\DLLs',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37',
+        r'C:\Users\Administrator\AppData\Roaming\Python\Python37\site-packages',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\site-packages',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\site-packages\win32',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\site-packages\win32\lib',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\lib\site-packages\Pythonwin',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\Lib',
+        r'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\Lib\site-packages',
+        os.path.abspath(os.curdir),
+    ]#复制粘贴的路径居然一直提示语法错误，没办法就只能在字串路径前都加上"r"前缀，就很怪，不知道是不是因为复制了什么不该复制的东西(例如格式符)才造成的问题
 
     context=dict()#环境卫生从我做起（选择性地将需要的东西传入命名空间中
     context['ListPrint']=ListPrint
