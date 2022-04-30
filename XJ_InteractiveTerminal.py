@@ -55,7 +55,7 @@ class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
             if(asr.GetValue()!=text):#如果记录不一致那就加进来
                 asr.IterSetEnd()#将访问器位置设置为末尾
                 asr.ForceInsert(text)#插入记录
-                asr.IterSetEnd()#将访问器位置设置为末尾
+            asr.IterSetEnd()#将访问器位置设置为末尾
         text=self.TextPreprocess(text)
         rst=self.__IT.ReadOrder(text)
         outputText=text+"\n"+''.join(rst)

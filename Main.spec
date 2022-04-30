@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['Main.py'],
-             pathex=['F:\\【可运行项目】\\自制的py交互终端'],
+             pathex=['F:\\Github_Repository\\Python\\InteractiveTerminal'],
              binaries=[],
              datas=[],
              hiddenimports=[],
