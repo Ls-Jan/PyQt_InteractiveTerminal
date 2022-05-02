@@ -91,12 +91,20 @@ class XJ_TextEdit(QTextEdit):
     def __SetOneLineText(self):#设置单行文本（只保留最后一行的文本）
         text=self.toPlainText()
         sep=text.find('\n')+1#寻找回车符的后一个字符
+        cursor = self.textCursor()#光标
+        offset=len(text)-cursor.position()#距离文末的偏移量
+
         while(sep):
             if(self.__sendMsgMode):#如果可以发送文本
                 self.textSent.emit(text[:sep])#连同回车符也一并发送
             text=text[sep:]#新行内容
             sep=text.find('\n')+1#寻找回车符的后一个字符
         self.setText(text)
+        offset=len(text)-offset#距离文首的偏移量(此时文本仅一行
+        if offset<0:
+            offset=0
+        cursor.setPosition(offset,QTextCursor.MoveAnchor)#移动光标
+        self.setTextCursor(cursor)
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -110,7 +118,7 @@ if __name__ == '__main__':
     te.Search("456")
     te.setFont(QFont('楷体',20))#设置字体
     te.SendMsgMode(True)#发送文本
-    te.textSent.connect(lambda s:print("【OneLine】\n",s))#设置“发送文本”的回调函数
+    te.textSent.connect(lambda s:print("【文本发送】\n",s))#设置“发送文本”的回调函数
 #    te.setReadOnly(True)#设置为只读
     te.OneLineMode(True)#单行模式
     te.AllowWheelScale(True)#Ctrl+滚轮的文本缩放
