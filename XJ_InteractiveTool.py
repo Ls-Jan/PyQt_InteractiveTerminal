@@ -1,4 +1,5 @@
 import XJ_Recorder
+import traceback#Python 输出详细的异常信息(traceback)方式：https://cloud.tencent.com/developer/article/1731086
 
 class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请注意。直接原因是XJ_Recorder的启动和关闭，根本原因是公共资源，对公共资源的解决办法是加锁(死锁警告！)
     def __init__(self,varDict=dict()):#记得传入变量字典，环境卫生从我做起
@@ -34,7 +35,7 @@ class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请
                     if(str(err).find("EOF")!=-1):#如果只是EOF错误那么说明是多行输入，置holdOn为真
                         holdOn=True
                     else:
-                        print(err)#输出错误
+                        self.__PrintTrackBack()#输出异常
         elif(holdOn==True):#如果当前并不是第一行输入
             if(emptyInput):#如果当前输入为空
                 holdOn=False
@@ -44,7 +45,7 @@ class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请
                     exec(code,locals)#执行代码
             except Exception as err:
                 if(str(err).find("EOF")==-1 or holdOn==False):#如果不是EOF错误，或者虽然是EOF错误但是holdOn为假的话那就输出错误
-                    print(err)#输出错误
+                    self.__PrintTrackBack()#输出异常
                     holdOn=False
         self.__text=text if holdOn else ""#如果执行完上面的if-else代码段后holdOn为假那么就清空text
         self.__holdOn=holdOn
@@ -56,9 +57,21 @@ class XJ_InteractiveTool:#单线程工具，多线程下使用时容易翻车请
  
         return newRecord
         
-    def VarDict():#获取self.__varDict
+    def VarDict(self):#获取self.__varDict
         return self.__varDict
         
+    def __PrintTrackBack(self):#打印异常
+        err=traceback.format_exc()
+        if(err.count('Traceback')>1):
+            err=err[err.find('\nTraceback'):]#清掉第一份错误，那个没啥用
+        else:
+            err='\n'+err#加上一个回车
+        err=err[err.find('<module>')+8:]#去除多余内容
+        err=err.replace('\n','\n* ')#每行前面添加一点符号
+        err=err[1:]#去掉第一个回车
+        err='_'*100+'\n'+err+'\n'+'￣'*50#整两条横线围一下
+        print(err)
+
 if __name__=='__main__':
     IT=XJ_InteractiveTool(globals())
 

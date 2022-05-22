@@ -37,7 +37,7 @@ class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
         self.__fmtHint.setFont(output.font())
         self.__fmtHint.setForeground(Qt.blue)
 
-        self.setStyleSheet("background-color: transparent;")
+        self.setStyleSheet("background-color: #000000;")
         output.verticalScrollBar().setStyleSheet("background-color:rgb(128,172,224);")
         input.setStyleSheet("color:rgb(255,255,255)")
         self.setWindowOpacity(0.80)#设置透明度

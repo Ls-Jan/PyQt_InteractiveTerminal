@@ -5,11 +5,15 @@ from XJ_InteractiveTerminal import XJ_InteractiveTerminal
 from types import MethodType
 from pydoc import help
 
-#打包exe后使用时经常会出现该问题：XXX.XXX未找到
+#打包exe后使用时经常会出现该问题：XXX.XXX未找到、XXX导入失败
 #原因是：这些模块都是其他模块间接导入的，而且已经记录到sys的import缓存中
 #于是就算人为指定路径sys.path也不管用，因为在执行import时总会优先从缓存中查找，除非把缓存删了吧(只不过这样就不知道会出现什么额外问题
+#所以运行exe时对于那些导入出现问题的，只能提前在这里导入，然后做出来的包才能正常使用
+#但问题反反复复出现，直接击溃我弱小的心灵。【【【真的烦死了】】】
+#这种路径问题，水很深，目前暂未找到合适的解决方法，所以只能将就着用了
 import html.parser 
 import distutils.version
+import pymouse
 
 #【关于python内open函数encoding编码问题】https://www.cnblogs.com/wangyi0419/p/11192593.html#:~:text=%E7%94%B3%E6%98%8Eopen%20%28%29%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F%E4%B8%BA%27utf-8%27%EF%BC%8C%E5%8D%B3encoding%3D%22utf-8%22.,%E5%9C%A8%E8%AF%BB%E5%8F%96%E6%96%87%E6%9C%AC%E6%96%87%E4%BB%B6%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E5%A6%82%E6%9E%9Copen%20%28%29%E5%87%BD%E6%95%B0%E6%B2%A1%E6%9C%89%E5%A3%B0%E6%98%8E%E4%BB%96%E4%BB%AC%E5%A6%82%E4%BD%95%E7%BC%96%E7%A0%81%EF%BC%8Cpython3%E4%BC%9A%E9%80%89%E5%8F%96%E4%BB%A3%E7%A0%81%E6%89%80%E8%BF%90%E8%A1%8C%E7%9A%84%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%BB%98%E8%AE%A4%E7%BC%96%E7%A0%81%E4%BD%9C%E4%B8%BAopen%20%28%29%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F%E3%80%82
 #【urwid判断字符宽度】

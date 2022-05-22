@@ -113,14 +113,14 @@ if __name__ == '__main__':
     te=XJ_TextEdit()
     te.append('<font color="red"> RRR </font>')#给文本加点料
     te.append("123456789\nABCDEFGHI\n123456789")
-    te.append('<font color="green"> GGG </font>')
+    te.append('<font color="green"> >><font color="red"> GGG </font></font>')
     te.Search("456")#搜索文本
     te.Search("456")
     te.setFont(QFont('楷体',20))#设置字体
     te.SendMsgMode(True)#发送文本
     te.textSent.connect(lambda s:print("【文本发送】\n",s))#设置“发送文本”的回调函数
 #    te.setReadOnly(True)#设置为只读
-    te.OneLineMode(True)#单行模式
+#    te.OneLineMode(True)#单行模式
     te.AllowWheelScale(True)#Ctrl+滚轮的文本缩放
     te.show()
 
