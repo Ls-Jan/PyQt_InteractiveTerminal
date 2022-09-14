@@ -2,7 +2,7 @@
 rmdir /s /q dist
 rmdir /s /q build
 
-pyinstaller -D --clean Main.py
+pyinstaller -D -w --clean Main.py
 
 cd dist/Main/
 cls
