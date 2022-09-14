@@ -101,7 +101,9 @@ class XJ_InteractiveTerminal(QWidget):#XJ的交互式窗口
         self.__output.clear()
         self.AppendTextToOutput("")
 
-
+    def GetContext(self):#返回context
+        return self.__IT.VarDict()
+        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     context=dict()#环境卫生从我做起（可以选择性地将需要的东西传入环境中

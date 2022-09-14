@@ -1,4 +1,12 @@
-pyinstaller -w -D --clean Main.py
+
+rmdir /s /q dist
+rmdir /s /q build
+
+pyinstaller -D --clean Main.py
+
+cd dist/Main/
+cls
+main.exe
 pause
 
 : "默认命令是pyinstaller -F -w ***.py"
